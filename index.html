@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Пластилиновый Аксолотль — Тамагочи</title>
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="aquwa.css">
+</head>
+<body>
+    <!-- 
+        #aquarium — главный контейнер всей игры.
+        Все элементы внутри позиционируются абсолютно относительно него.
+    -->
+    <div id="aquarium">
+        <!-- Кастомные курсоры-инструменты (сачок, губка, лапка).
+             Показываются только в соответствующем режиме, скрывают дефолтный курсор. -->
+        <img id="custom-net-cursor" src="tex/netliz.png" alt="Сачок" draggable="false">
+        <img id="custom-sponge-cursor" src="tex/spongeliz.png" alt="Губка" draggable="false">
+        <img id="custom-paw-cursor" src="tex/pawliz.png" alt="Лапка" draggable="false">
+
+        <!-- Облачко с текстом реплик аксолотля.
+             bubble-tail — пузырьки-«хвост», bubble-bg — белый овал, bubble-text — сам текст. -->
+        <div id="chat-bubble-container">
+            <img id="bubble-tail" src="tex/bubble1.png" alt="tail">
+            <img id="bubble-bg" src="tex/bubble2.png" alt="bubble">
+            <div id="bubble-text">⭐...</div>
+        </div>
+
+        <!-- Контейнер персонажа. Содержит спрайт аксолотля.
+             Меняет картинку в зависимости от времени суток и действий. -->
+        <div id="axolotl-character">
+            <img id="sprite-img" src="tex/sprite.png" alt="Axolotl" draggable="false">
+        </div>
+
+        <!-- Слой интерфейса с кнопками. pointer-events: none на слое,
+             pointer-events: auto на кнопках — клики проходят только по кнопкам. -->
+        <div class="interface-layer">
+            <!-- Кнопка смены дня/ночи. Переключает фон, музыку, спрайт. -->
+            <div id="btn-toggle-light" class="menu-btn" onclick="toggleTimeOfDay()">
+                <img id="light-icon-img" src="tex/day.png" draggable="false">
+            </div>
+            <!-- Кнопка режима поглаживания. Включает курсор-лапку. -->
+            <div id="btn-paw" class="menu-btn" onclick="togglePawMode()">
+                <img id="img-paw" src="tex/paw.png" draggable="false">
+            </div>
+            <!-- Кнопка режима уборки. Включает курсор-губку для мытья грязи. -->
+            <div id="btn-sponge" class="menu-btn" onclick="toggleSpongeMode()">
+                <img id="img-sponge" src="tex/sponge.png" draggable="false">
+            </div>
+
+            <!-- Кнопка кормления. Сбрасывает инструменты и создаёт еду. -->
+            <div id="btn-food" class="menu-btn" onclick="spawnFood()">
+                <img src="tex/food.png" draggable="false">
+            </div>
+            <!-- Кнопка режима сачка. Включает курсор-сачок для уборки грязной еды. -->
+            <div id="btn-net" class="menu-btn" onclick="toggleNetMode()">
+                <img id="img-net" src="tex/net.png" draggable="false">
+            </div>
+            <!-- Кнопка чата. Аксолотль говорит случайную фразу. -->
+            <div id="btn-chat" class="menu-btn" onclick="handleInteraction('chat')">
+                <img src="tex/chat.png" draggable="false">
+            </div>
+            <!-- Кнопка вкл/выкл звука. Управляет фоновой музыкой и эффектами. -->
+            <div id="btn-sound" class="sound-btn" onclick="toggleSound()">
+                <img id="sound-icon-img" src="tex/zvuk_on.png" alt="Sound Status" draggable="false">
+            </div>
+
+            <!-- Аудио-элементы:
+                 ost-day / ost-night — фоновая музыка днём и ночью (loop).
+                 sound-boop — короткий звук для эффекта «печатной машинки» при выводе текста. -->
+            <audio id="ost-day" src="ost/day.mp3" loop></audio>
+            <audio id="ost-night" src="ost/night.mp3" loop></audio>
+            <audio id="sound-boop" src="boop.wav"></audio>
+        </div>
+    </div>
+
+    <!-- Подключаем логику игры. Должен быть в конце body, чтобы DOM уже был загружен. -->
+    <script src="swuim.js"></script>
+</body>
+</html>

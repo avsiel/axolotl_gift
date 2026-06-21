@@ -1,0 +1,311 @@
+/* 
+   ============================================
+   ОБЩИЕ СТИЛИ СТРАНИЦЫ
+   ============================================
+   body — центрирует аквариум по центру экрана,
+   убирает полосы прокрутки, запрещает выделение текста.
+*/
+body {
+    background-color: #1a1a1a;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    user-select: none;
+    overflow: hidden;
+}
+
+/* 
+   ============================================
+   АКВАРИУМ — ГЛАВНЫЙ КОНТЕЙНЕР
+   ============================================
+   #aquarium — окно игры 1550x850px с фоном bg.png.
+   Все дочерние элементы позиционируются абсолютно внутри него.
+   overflow: hidden — ничего не выходит за границы.
+*/
+#aquarium {
+    width: 1550px;
+    height: 850px;
+    background-image: url('tex/bg.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    border: 12px solid #5d4037;
+    border-radius: 20px;
+    box-shadow: 0 20px 45px rgba(0,0,0,0.6);
+    overflow: hidden;
+    transition: background-image 0.8s ease;
+}
+
+/* 
+   night-mode — класс, добавляемый JS при переключении на ночь.
+   Меняет фон на bg_night.png.
+*/
+#aquarium.night-mode {
+    background-image: url('tex/bg_night.png');
+}
+
+/* 
+   Режимы инструментов: скрываем стандартный курсор,
+   вместо него показывается кастомный (сачок/губка/лапка).
+*/
+#aquarium.net-mode,
+#aquarium.sponge-mode,
+#aquarium.paw-mode {
+    cursor: none;
+}
+
+/* 
+   ============================================
+   КАСТОМНЫЕ КУРСОРЫ-ИНСТРУМЕНТЫ
+   ============================================
+   Три картинки, которые следуют за мышью в режимах инструментов.
+   pointer-events: none — клики проходят сквозь них к элементам под ними.
+   z-index: 9999 — поверх всего.
+*/
+#custom-net-cursor,
+#custom-sponge-cursor,
+#custom-paw-cursor {
+    position: absolute;
+    width: 110px;
+    height: 110px;
+    pointer-events: none;
+    z-index: 9999;
+    display: none;          /* Скрыты по умолчанию, включает JS */
+    transform: translate(-50%, -50%); /* Центрируем курсор на точке мыши */
+}
+
+/* 
+   ============================================
+   ОБЛАЧКО С ТЕКСТОМ РЕПЛИК
+   ============================================
+   #chat-bubble-container — контейнер облачка над головой аксолотля.
+   Содержит фон (bubble-bg), хвост из пузырьков (bubble-tail) и текст.
+*/
+#chat-bubble-container {
+    position: absolute;
+    left: 59%;
+    bottom: 635px;          /* Позиция над головой, не перекрывает жабры */
+    width: 230px;
+    height: 172px;
+    z-index: 10;
+    display: none;          /* Показывает JS при диалоге */
+    pointer-events: none;   /* Клики проходят сквозь облачко */
+}
+
+/* Белый овал-фон облачка */
+#bubble-bg {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    object-fit: fill;
+}
+
+/* Декоративные пузырьки-«хвост», тянущиеся к макушке */
+#bubble-tail {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    left: -50px;
+    bottom: -60px;
+    z-index: 1;
+    object-fit: contain;
+}
+
+/* 
+   ============================================
+   КНОПКА ЗВУКА
+   ============================================
+   sound-btn — круглая кнопка вкл/выкл звука в правом верхнем углу.
+*/
+.sound-btn {
+    position: absolute;
+    right: 30px;
+    top: 30px;
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    pointer-events: auto;
+    z-index: 100;
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+.sound-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.sound-btn:hover { transform: scale(1.1); }
+.sound-btn:active { transform: scale(0.95); }
+
+/* 
+   ============================================
+   ТЕКСТ ВНУТРИ ОБЛАЧКА
+   ============================================
+   #bubble-text — flex-центрированный текст внутри овала.
+   padding создаёт отступ от краёв, line-height для читаемости.
+*/
+#bubble-text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px 25px;
+    box-sizing: border-box;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    color: #2c3e50;
+    line-height: 1.25;
+    overflow: hidden;
+    word-wrap: break-word;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* 
+   ============================================
+   ПЕРСОНАЖ АКСОЛОТЛЬ
+   ============================================
+   #axolotl-character — контейнер спрайта, центрирован по горизонтали,
+   прижат к низу аквариума. Содержит sprite-img.
+*/
+#axolotl-character {
+    position: absolute;
+    left: 50%;
+    bottom: 50px;
+    transform: translateX(-50%);
+    height: 580px;
+    transition: transform 0.2s ease;
+    z-index: 2;
+    cursor: pointer;
+}
+
+#axolotl-character img {
+    height: 100%;
+    display: block;
+}
+
+/* 
+   ============================================
+   АНИМАЦИЯ ПОКАЧИВАНИЯ (ПРИ ПОГЛАЖИВАНИИ)
+   ============================================
+   petWobble — лёгкое покачивание влево-вправо.
+   Применяется класс .wobbling через JS при зажатой лапке на персонаже.
+*/
+@keyframes petWobble {
+    0% { transform: translateX(-50%) scale(1) rotate(0deg); }
+    25% { transform: translateX(-50%) scale(1.02) rotate(1deg); }
+    75% { transform: translateX(-50%) scale(1.02) rotate(-1deg); }
+    100% { transform: translateX(-50%) scale(1) rotate(0deg); }
+}
+
+#axolotl-character.wobbling {
+    animation: petWobble 0.35s infinite ease-in-out;
+}
+
+/* 
+   ============================================
+   ЕДА И ГРЯЗЬ
+   ============================================
+   falling-food — падающая креветка, движется сверху вниз через transition.
+   dirty-food — креветка, которая упала и испортилась (можно убрать сачком).
+   mud-spot — пятно грязи, убирается губкой (уменьшается scale до 0).
+*/
+.falling-food {
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    z-index: 3;
+    pointer-events: none;
+    transition: top 1.2s linear;
+}
+
+.dirty-food {
+    position: absolute;
+    width: 75px;
+    height: 75px;
+    z-index: 4;
+    pointer-events: auto;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.mud-spot {
+    position: absolute;
+    width: 95px;
+    height: 95px;
+    z-index: 6;
+    pointer-events: auto;
+    transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+/* 
+   ============================================
+   ИНТЕРФЕЙСНЫЙ СЛОЙ С КНОПКАМИ
+   ============================================
+   interface-layer — покрывает весь аквариум, но пропускает клики (pointer-events: none).
+   Кнопки внутри имеют pointer-events: auto — по ним можно кликать.
+*/
+.interface-layer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    pointer-events: none;
+}
+
+/* 
+   menu-btn — игровые кнопки (день/ночь, лапка, губка, еда, сачок, чат).
+   Расположены дугой по краям аквариума.
+*/
+.menu-btn {
+    position: absolute;
+    width: 115px;
+    height: 115px;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: transform 0.2s ease, filter 0.3s ease;
+}
+
+.menu-btn img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.menu-btn:hover { transform: scale(1.1); }
+.menu-btn:active { transform: scale(0.95); }
+
+/* active-tool — подсветка выбранного инструмента (красное свечение) */
+.menu-btn.active-tool {
+    filter: drop-shadow(0 0 12px #f43f5e) brightness(1.2);
+}
+
+/* 
+   ============================================
+   ПОЗИЦИИ КНОПОК (дуга по краям)
+   ============================================
+   Левая дуга: день/ночь → лапка → губка
+   Правая дуга: еда → сачок → чат
+*/
+#btn-toggle-light { left: 160px; top: 120px; }
+#btn-paw          { left: 280px; top: 290px; }
+#btn-sponge       { left: 470px; top: 440px; }
+
+#btn-food         { right: 160px; top: 120px; }
+#btn-net          { right: 280px; top: 290px; }
+#btn-chat         { right: 470px; top: 440px; }
